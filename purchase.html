@@ -208,17 +208,92 @@ select option {
 
 /* واکنش‌گرایی */
 @media (max-width: 900px) {
+  .container {
+    flex-direction: column;
+    border-radius: 16px;
+    padding: 15px;
+    width: 100%;
+  }
+
   .rules, .payment-box {
     flex: 1 1 100%;
-    padding: 25px;
+    padding: 20px;
     border: none;
   }
-  .qr-box img {
-    width: 140px;
-    height: 140px;
+
+  .rules h2, .payment-box h2 {
+    font-size: 20px;
   }
+
+  .rules p, .rules ul li, .payment-box label {
+    font-size: 14px;
+  }
+
+  .select {
+    width: 100%;
+    padding: 10px 16px;
+  }
+
+  .wallet-box {
+    font-size: 14px;
+    padding: 12px;
+  }
+
+  .qr-box img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .button-back {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px;
+  }
+}
+
+/* واکنش‌گرایی برای گوشی‌های خیلی کوچک (زیر 500px) */
+@media (max-width: 500px) {
+  body {
+    padding: 10px;
+  }
+
   .container {
-    border-radius: 16px;
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .rules h2, .payment-box h2 {
+    font-size: 18px;
+  }
+
+  .rules p, .rules ul li, .payment-box label {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .select {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .wallet-box {
+    font-size: 13px;
+    padding: 10px;
+    word-break: break-all;
+  }
+
+  .qr-box img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .button-back {
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  .copy-message {
+    font-size: 13px;
   }
 }
 </style>
@@ -311,3 +386,4 @@ walletBox.addEventListener('click', () => {
 
 </body>
 </html>
+
