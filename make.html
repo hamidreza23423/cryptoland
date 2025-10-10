@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تست اندیکاتور — باکس شیشه‌ای</title>
+<script src="https://unpkg.com/lightweight-charts@3.8.0/dist/lightweight-charts.standalone.production.js"></script>
+
+<style>
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn/Vazirmatn-font-face.css');
+
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: 'Vazirmatn', sans-serif;
+  background: linear-gradient(135deg, #3b82f6, #1e3a8a);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+}
+
+.chart-box {
+  width: 90%;
+  max-width: 1200px;
+  height: 85%;
+  background: rgba(255,255,255,0.12);
+  border-radius: 20px;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: scale(0.98);}
+  to {opacity: 1; transform: scale(1);}
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dropdown {
+  position: relative;
+  flex: 1;
+  min-width: 150px;
+  text-align: center;
+}
+
+.dropdown-toggle {
+  width: 80%;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.25s ease;
+  font-size: 15px;
+  user-select: none;
+  position: relative;
+}
+
+.dropdown-toggle::after {
+  content: "▾";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.8;
+  font-size: 16px;
+}
+
+.dropdown-toggle:hover {
+  background: rgba(255,255,255,0.3);
+  transform: translateY(-2px);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  display: none;
+  flex-direction: column;
+  z-index: 100;
+  animation: fadeInMenu 0.25s ease;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139,92,246,0.6) rgba(255,255,255,0.1);
+}
+
+/* برای مرورگرهای Webkit (Chrome, Edge, Safari) */
+.dropdown-menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+  background: rgba(139,92,246,0.6);
+  border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.1);
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(139,92,246,0.9);
+}
+
+@keyframes fadeInMenu {
+  from {opacity: 0; transform: translateY(-5px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+.dropdown-menu.show {
+  display: flex;
+}
+
+.dropdown-item {
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  color: #fff;
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: rgba(139,92,246,0.4);
+  backdrop-filter: blur(16px);
+}
+
+.chart-wrap {
+  flex: 1;
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.buy-btn {
+  margin-top: 18px;
+  padding: 12px 24px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, #8b5cf6, #ec4899);
+  box-shadow: 0 0 15px rgba(236,72,153,0.6);
+  transition: all 0.25s ease;
+  align-self: center;
+}
+
+.buy-btn:hover {
+  transform: scale(1.07);
+  box-shadow: 0 0 25px rgba(236,72,153,0.8);
+}
+
+#tooltip {
+  position: absolute;
+  display: none;
+  pointer-events: none;
+  z-index: 50;
+  background: rgba(255,255,255,0.95);
+  color: #000;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+@media (max-width: 768px) {
+  .chart-box {
+    height: 90%;
+    padding: 16px;
+  }
+  .header {
+    flex-direction: row;
+  }
+  .dropdown {
+    width: 100%;
+  }
+  .buy-btn {
+    width: 90%;
+    font-size: 16px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="chart-box">
+  <div class="header">
+    <div class="dropdown" id="symbolDropdown">
+      <div class="dropdown-toggle" id="symbolToggle">ارز: BTC</div>
+      <div class="dropdown-menu" id="symbolMenu"></div>
+    </div>
+
+    <div class="dropdown" id="tfDropdown">
+      <div class="dropdown-toggle" id="tfToggle">تایم فریم: 1m</div>
+      <div class="dropdown-menu" id="tfMenu"></div>
+    </div>
+  </div>
+
+  <div class="chart-wrap" id="chart"></div>
+  <div id="tooltip"></div>
+
+  <button class="buy-btn" onclick="window.location.href='purchase.html'">🛒 خرید اندیکاتور</button>
+</div>
+
+<script>
+const signalData = {
+  "BTC": {
+    "1m": [
+      {
+        "time": 1760014920,
+        "type": "SELL"
+      },
+      {
+        "time": 1760019420,
+        "type": "SELL"
+      },
+      {
+        "time": 1760026680,
+        "type": "SELL"
+      },
+      {
+        "time": 1760029680,
+        "type": "LONG"
+      },
+      {
+        "time": 1760041140,
+        "type": "LONG"
+      },
+      {
+        "time": 1760060100,
+        "type": "SELL"
+      }
+    ],
+    "3m": [
+      {
+        "time": 1759909680,
+        "type": "LONG"
+      },
+      {
+        "time": 1759938840,
+        "type": "LONG"
+      },
+      {
+        "time": 1759946940,
+        "type": "SELL"
+      },
+      {
+        "time": 1759966740,
+        "type": "SELL"
+      },
+      {
+        "time": 1760000040,
+        "type": "LONG"
+      },
+      {
+        "time": 1760016600,
+        "type": "SELL"
+      },
+      {
+        "time": 1760031000,
+        "type": "LONG"
+      }
+    ],
+    "5m": [
+      {
+        "time": 1759778400,
+        "type": "SELL"
+      },
+      {
+        "time": 1759843500,
+        "type": "SELL"
+      },
+      {
+        "time": 1759862100,
+        "type": "LONG"
+      },
+      {
+        "time": 1759947000,
+        "type": "SELL"
+      },
+      {
+        "time": 1760016600,
+        "type": "SELL"
+      },
+      {
+        "time": 1760030100,
+        "type": "LONG"
+      }
+    ],
+    "15m": [
+      {
+        "time": 1759252500,
+        "type": "LONG"
+      },
+      {
+        "time": 1759392900,
+        "type": "LONG"
+      },
+      {
+        "time": 1759501800,
+        "type": "LONG"
+      },
+      {
+        "time": 1759605300,
+        "type": "LONG"
+      },
+      {
+        "time": 1759778100,
+        "type": "SELL"
+      },
+      {
+        "time": 1759948200,
+        "type": "SELL"
+      }
+    ],
+    "30m": [
+      {
+        "time": 1758889800,
+        "type": "LONG"
+      },
+      {
+        "time": 1759064400,
+        "type": "LONG"
+      },
+      {
+        "time": 1759129200,
+        "type": "LONG"
+      },
+      {
+        "time": 1759303800,
+        "type": "LONG"
+      },
+      {
+        "time": 1759480200,
+        "type": "LONG"
+      }
+    ],
+    "1h": [
+      {
+        "time": 1756695600,
+        "type": "LONG"
+      },
+      {
+        "time": 1757001600,
+        "type": "LONG"
+      },
+      {
+        "time": 1757466000,
+        "type": "LONG"
+      },
+      {
+        "time": 1758240000,
+        "type": "SELL"
+      },
+      {
+        "time": 1758477600,
+        "type": "SELL"
+      },
+      {
+        "time": 1758736800,
+        "type": "SELL"
+      }
+    ],
+    "2h": [
+      {
+        "time": 1754179200,
+        "type": "LONG"
+      },
+      {
+        "time": 1755151200,
+        "type": "SELL"
+      },
+      {
+        "time": 1756512000,
+        "type": "LONG"
+      },
+      {
+        "time": 1757448000,
+        "type": "LONG"
+      },
+      {
+        "time": 1758225600,
+        "type": "SELL"
+      },
+      {
+        "time": 1759060800,
+        "type": "LONG"
+      }
+    ],
+    "4h": [
+      {
+        "time": 1746446400,
+        "type": "LONG"
+      },
+      {
+        "time": 1750665600,
+        "type": "LONG"
+      },
+      {
+        "time": 1756756800,
+        "type": "LONG"
+      }
+    ],
+    "1d": [
+      {
+        "time": 1678579200,
+        "type": "LONG"
+      },
+      {
+        "time": 1697414400,
+        "type": "LONG"
+      },
+      {
+        "time": 1706486400,
+        "type": "LONG"
+      },
+      {
+        "time": 1725667200,
+        "type": "LONG"
+      },
+      {
+        "time": 1744675200,
+        "type": "LONG"
+      }
+    ]
+  },
+  "ETH": {
+    "1m": [
+      {
+        "time": 1760016300,
+        "type": "SELL"
+      },
+      {
+        "time": 1760022600,
+        "type": "SELL"
+      },
+      {
+        "time": 1760036160,
+        "type": "LONG"
+      },
+      {
+        "time": 1760045580,
+        "type": "LONG"
+      },
+      {
+        "time": 1760067600,
+        "type": "SELL"
+      }
+    ],
+    "3m": [
+      {
+        "time": 1759939560,
+        "type": "LONG"
+      },
+      {
+        "time": 1759968720,
+        "type": "SELL"
+      },
+      {
+        "time": 1759987800,
+        "type": "SELL"
+      },
+      {
+        "time": 1760005440,
+        "type": "LONG"
+      }
+    ],
+    "5m": [
+      {
+        "time": 1759843800,
+        "type": "SELL"
+      },
+      {
+        "time": 1759967400,
+        "type": "SELL"
+      }
+    ],
+    "15m": [
+      {
+        "time": 1759252500,
+        "type": "LONG"
+      },
+      {
+        "time": 1759300200,
+        "type": "LONG"
+      },
+      {
+        "time": 1759354200,
+        "type": "LONG"
+      },
+      {
+        "time": 1759599900,
+        "type": "LONG"
+      },
+      {
+        "time": 1759712400,
+        "type": "LONG"
+      }
+    ],
+    "30m": [
+      {
+        "time": 1758484800,
+        "type": "SELL"
+      },
+      {
+        "time": 1758884400,
+        "type": "LONG"
+      },
+      {
+        "time": 1759064400,
+        "type": "LONG"
+      },
+      {
+        "time": 1759294800,
+        "type": "LONG"
+      },
+      {
+        "time": 1759624200,
+        "type": "LONG"
+      },
+      {
+        "time": 1759962600,
+        "type": "SELL"
+      }
+    ],
+    "1h": [
+      {
+        "time": 1757757600,
+        "type": "SELL"
+      },
+      {
+        "time": 1758477600,
+        "type": "SELL"
+      },
+      {
+        "time": 1758888000,
+        "type": "LONG"
+      },
+      {
+        "time": 1759269600,
+        "type": "LONG"
+      },
+      {
+        "time": 1759950000,
+        "type": "SELL"
+      }
+    ],
+    "2h": [
+      {
+        "time": 1754172000,
+        "type": "LONG"
+      },
+      {
+        "time": 1754460000,
+        "type": "LONG"
+      },
+      {
+        "time": 1757440800,
+        "type": "LONG"
+      },
+      {
+        "time": 1758225600,
+        "type": "SELL"
+      },
+      {
+        "time": 1758902400,
+        "type": "LONG"
+      }
+    ],
+    "4h": [
+      {
+        "time": 1746518400,
+        "type": "LONG"
+      },
+      {
+        "time": 1750665600,
+        "type": "LONG"
+      },
+      {
+        "time": 1751918400,
+        "type": "LONG"
+      },
+      {
+        "time": 1754193600,
+        "type": "LONG"
+      },
+      {
+        "time": 1757808000,
+        "type": "SELL"
+      }
+    ],
+    "1d": [
+      {
+        "time": 1678665600,
+        "type": "LONG"
+      },
+      {
+        "time": 1697155200,
+        "type": "LONG"
+      },
+      {
+        "time": 1697500800,
+        "type": "LONG"
+      },
+      {
+        "time": 1706227200,
+        "type": "LONG"
+      },
+      {
+        "time": 1717200000,
+        "type": "SELL"
+      },
+      {
+        "time": 1717632000,
+        "type": "SELL"
+      },
+      {
+        "time": 1726099200,
+        "type": "LONG"
+      },
+      {
+        "time": 1734566400,
+        "type": "SELL"
+      },
+      {
+        "time": 1744070400,
+        "type": "LONG"
+      },
+      {
+        "time": 1746144000,
+        "type": "LONG"
+      }
+    ]
+  },
+  "SOL": {
+    "1m": [],
+    "3m": [],
+    "5m": [],
+    "15m": [],
+    "30m": [],
+    "1h": [],
+    "2h": [],
+    "4h": [],
+    "1d": [
+      {
+        "time": 1697673600,
+        "type": "LONG"
+      },
+      {
+        "time": 1706140800,
+        "type": "LONG"
+      },
+      {
+        "time": 1725926400,
+        "type": "LONG"
+      },
+      {
+        "time": 1744243200,
+        "type": "LONG"
+      }
+    ]
+  },
+  "BNB": {
+    "1m": [
+      {
+        "time": 1760016720,
+        "type": "SELL"
+      },
+      {
+        "time": 1760039220,
+        "type": "LONG"
+      },
+      {
+        "time": 1760065620,
+        "type": "LONG"
+      }
+    ],
+    "3m": [
+      {
+        "time": 1759971060,
+        "type": "SELL"
+      },
+      {
+        "time": 1759995720,
+        "type": "SELL"
+      },
+      {
+        "time": 1760029200,
+        "type": "LONG"
+      }
+    ],
+    "5m": [
+      {
+        "time": 1759802100,
+        "type": "LONG"
+      },
+      {
+        "time": 1759824300,
+        "type": "LONG"
+      },
+      {
+        "time": 1759955400,
+        "type": "SELL"
+      }
+    ],
+    "15m": [
+      {
+        "time": 1759365900,
+        "type": "LONG"
+      },
+      {
+        "time": 1759609800,
+        "type": "LONG"
+      },
+      {
+        "time": 1759798800,
+        "type": "LONG"
+      }
+    ],
+    "30m": [
+      {
+        "time": 1758600000,
+        "type": "LONG"
+      },
+      {
+        "time": 1758888000,
+        "type": "LONG"
+      },
+      {
+        "time": 1759366800,
+        "type": "LONG"
+      },
+      {
+        "time": 1759825800,
+        "type": "LONG"
+      }
+    ],
+    "1h": [
+      {
+        "time": 1757008800,
+        "type": "LONG"
+      },
+      {
+        "time": 1757988000,
+        "type": "LONG"
+      },
+      {
+        "time": 1759251600,
+        "type": "LONG"
+      },
+      {
+        "time": 1759690800,
+        "type": "LONG"
+      }
+    ],
+    "2h": [
+      {
+        "time": 1754416800,
+        "type": "LONG"
+      },
+      {
+        "time": 1757131200,
+        "type": "LONG"
+      },
+      {
+        "time": 1758888000,
+        "type": "LONG"
+      }
+    ],
+    "4h": [
+      {
+        "time": 1750809600,
+        "type": "LONG"
+      },
+      {
+        "time": 1754294400,
+        "type": "LONG"
+      },
+      {
+        "time": 1757059200,
+        "type": "LONG"
+      },
+      {
+        "time": 1759248000,
+        "type": "LONG"
+      }
+    ],
+    "1d": [
+      {
+        "time": 1696982400,
+        "type": "LONG"
+      },
+      {
+        "time": 1706659200,
+        "type": "LONG"
+      },
+      {
+        "time": 1722816000,
+        "type": "LONG"
+      },
+      {
+        "time": 1745107200,
+        "type": "LONG"
+      },
+      {
+        "time": 1754524800,
+        "type": "LONG"
+      }
+    ]
+  },
+  "DOGE": {
+    "1m": [
+      {
+        "time": 1760016420,
+        "type": "SELL"
+      },
+      {
+        "time": 1760031060,
+        "type": "LONG"
+      },
+      {
+        "time": 1760040960,
+        "type": "LONG"
+      },
+      {
+        "time": 1760065860,
+        "type": "LONG"
+      }
+    ],
+    "3m": [
+      {
+        "time": 1759903920,
+        "type": "LONG"
+      },
+      {
+        "time": 1759924440,
+        "type": "LONG"
+      },
+      {
+        "time": 1759955040,
+        "type": "SELL"
+      },
+      {
+        "time": 1759962600,
+        "type": "SELL"
+      },
+      {
+        "time": 1760031000,
+        "type": "LONG"
+      }
+    ],
+    "5m": [
+      {
+        "time": 1759814400,
+        "type": "SELL"
+      },
+      {
+        "time": 1759843500,
+        "type": "SELL"
+      },
+      {
+        "time": 1759904100,
+        "type": "LONG"
+      },
+      {
+        "time": 1759960800,
+        "type": "SELL"
+      }
+    ],
+    "15m": [
+      {
+        "time": 1759294800,
+        "type": "LONG"
+      },
+      {
+        "time": 1759598100,
+        "type": "LONG"
+      },
+      {
+        "time": 1759655700,
+        "type": "SELL"
+      },
+      {
+        "time": 1759712400,
+        "type": "LONG"
+      }
+    ],
+    "30m": [
+      {
+        "time": 1758434400,
+        "type": "SELL"
+      },
+      {
+        "time": 1758884400,
+        "type": "LONG"
+      },
+      {
+        "time": 1759062600,
+        "type": "LONG"
+      }
+    ],
+    "1h": [
+      {
+        "time": 1756810800,
+        "type": "LONG"
+      },
+      {
+        "time": 1757174400,
+        "type": "LONG"
+      },
+      {
+        "time": 1757815200,
+        "type": "SELL"
+      }
+    ],
+    "2h": [
+      {
+        "time": 1753135200,
+        "type": "SELL"
+      },
+      {
+        "time": 1754388000,
+        "type": "LONG"
+      },
+      {
+        "time": 1755727200,
+        "type": "LONG"
+      }
+    ],
+    "4h": [
+      {
+        "time": 1748116800,
+        "type": "SELL"
+      },
+      {
+        "time": 1751356800,
+        "type": "LONG"
+      },
+      {
+        "time": 1754179200,
+        "type": "LONG"
+      },
+      {
+        "time": 1756814400,
+        "type": "LONG"
+      }
+    ],
+    "1d": [
+      {
+        "time": 1725062400,
+        "type": "LONG"
+      },
+      {
+        "time": 1737590400,
+        "type": "SELL"
+      },
+      {
+        "time": 1744243200,
+        "type": "LONG"
+      }
+    ]
+  },
+  "TRON": {
+    "1m": [
+      {
+        "time": 1760029200,
+        "type": "LONG"
+      }
+    ],
+    "3m": [
+      {
+        "time": 1759938300,
+        "type": "LONG"
+      },
+      {
+        "time": 1759971060,
+        "type": "SELL"
+      }
+    ],
+    "5m": [
+      {
+        "time": 1759804200,
+        "type": "SELL"
+      },
+      {
+        "time": 1759939200,
+        "type": "LONG"
+      },
+      {
+        "time": 1759982400,
+        "type": "SELL"
+      }
+    ],
+    "15m": [
+      {
+        "time": 1759280400,
+        "type": "LONG"
+      },
+      {
+        "time": 1759803300,
+        "type": "SELL"
+      },
+      {
+        "time": 1759968900,
+        "type": "SELL"
+      }
+    ],
+    "30m": [
+      {
+        "time": 1758441600,
+        "type": "SELL"
+      },
+      {
+        "time": 1759276800,
+        "type": "LONG"
+      }
+    ],
+    "1h": [
+      {
+        "time": 1757253600,
+        "type": "LONG"
+      },
+      {
+        "time": 1758369600,
+        "type": "SELL"
+      }
+    ],
+    "2h": [
+      {
+        "time": 1753322400,
+        "type": "LONG"
+      },
+      {
+        "time": 1756015200,
+        "type": "SELL"
+      }
+    ],
+    "4h": [
+      {
+        "time": 1747526400,
+        "type": "LONG"
+      },
+      {
+        "time": 1750924800,
+        "type": "LONG"
+      },
+      {
+        "time": 1752148800,
+        "type": "LONG"
+      }
+    ],
+    "1d": [
+      {
+        "time": 1686787200,
+        "type": "LONG"
+      },
+      {
+        "time": 1702598400,
+        "type": "LONG"
+      },
+      {
+        "time": 1722816000,
+        "type": "LONG"
+      },
+      {
+        "time": 1741996800,
+        "type": "LONG"
+      }
+    ]
+  },
+  "ADA": {
+    "1m": [
+      {
+        "time": 1760014800,
+        "type": "SELL"
+      },
+      {
+        "time": 1760030940,
+        "type": "LONG"
+      },
+      {
+        "time": 1760042940,
+        "type": "LONG"
+      }
+    ],
+    "3m": [
+      {
+        "time": 1759938300,
+        "type": "LONG"
+      },
+      {
+        "time": 1759968180,
+        "type": "SELL"
+      }
+    ],
+    "5m": [
+      {
+        "time": 1759798800,
+        "type": "SELL"
+      },
+      {
+        "time": 1759844400,
+        "type": "SELL"
+      },
+      {
+        "time": 1759902600,
+        "type": "LONG"
+      },
+      {
+        "time": 1759948500,
+        "type": "SELL"
+      }
+    ],
+    "15m": [
+      {
+        "time": 1759254300,
+        "type": "LONG"
+      },
+      {
+        "time": 1759806900,
+        "type": "SELL"
+      }
+    ],
+    "30m": [
+      {
+        "time": 1758465000,
+        "type": "SELL"
+      },
+      {
+        "time": 1759044600,
+        "type": "LONG"
+      }
+    ],
+    "1h": [
+      {
+        "time": 1757001600,
+        "type": "LONG"
+      },
+      {
+        "time": 1757782800,
+        "type": "SELL"
+      },
+      {
+        "time": 1758247200,
+        "type": "SELL"
+      },
+      {
+        "time": 1758884400,
+        "type": "LONG"
+      }
+    ],
+    "2h": [
+      {
+        "time": 1753221600,
+        "type": "SELL"
+      },
+      {
+        "time": 1754481600,
+        "type": "LONG"
+      },
+      {
+        "time": 1755424800,
+        "type": "SELL"
+      },
+      {
+        "time": 1756792800,
+        "type": "LONG"
+      }
+    ],
+    "4h": [
+      {
+        "time": 1748361600,
+        "type": "SELL"
+      },
+      {
+        "time": 1751947200,
+        "type": "LONG"
+      },
+      {
+        "time": 1754164800,
+        "type": "LONG"
+      }
+    ],
+    "1d": [
+      {
+        "time": 1698019200,
+        "type": "LONG"
+      },
+      {
+        "time": 1730160000,
+        "type": "LONG"
+      },
+      {
+        "time": 1751328000,
+        "type": "LONG"
+      }
+    ]
+  },
+  "LINK": {
+    "1m": [
+      {
+        "time": 1760029080,
+        "type": "LONG"
+      },
+      {
+        "time": 1760045220,
+        "type": "LONG"
+      },
+      {
+        "time": 1760065500,
+        "type": "LONG"
+      }
+    ],
+    "3m": [
+      {
+        "time": 1759938480,
+        "type": "LONG"
+      },
+      {
+        "time": 1759990320,
+        "type": "SELL"
+      },
+      {
+        "time": 1760003460,
+        "type": "LONG"
+      },
+      {
+        "time": 1760043780,
+        "type": "LONG"
+      }
+    ],
+    "5m": [
+      {
+        "time": 1759813200,
+        "type": "SELL"
+      },
+      {
+        "time": 1759842900,
+        "type": "SELL"
+      },
+      {
+        "time": 1759965600,
+        "type": "SELL"
+      },
+      {
+        "time": 1760025900,
+        "type": "LONG"
+      }
+    ],
+    "15m": [
+      {
+        "time": 1759296600,
+        "type": "LONG"
+      },
+      {
+        "time": 1759809600,
+        "type": "SELL"
+      },
+      {
+        "time": 1760024700,
+        "type": "LONG"
+      }
+    ],
+    "30m": [
+      {
+        "time": 1758445200,
+        "type": "SELL"
+      },
+      {
+        "time": 1758879000,
+        "type": "LONG"
+      },
+      {
+        "time": 1759296600,
+        "type": "LONG"
+      }
+    ],
+    "1h": [
+      {
+        "time": 1757188800,
+        "type": "LONG"
+      },
+      {
+        "time": 1757822400,
+        "type": "SELL"
+      },
+      {
+        "time": 1759060800,
+        "type": "LONG"
+      }
+    ],
+    "2h": [
+      {
+        "time": 1754395200,
+        "type": "LONG"
+      },
+      {
+        "time": 1758240000,
+        "type": "SELL"
+      },
+      {
+        "time": 1758823200,
+        "type": "LONG"
+      }
+    ],
+    "4h": [
+      {
+        "time": 1747915200,
+        "type": "SELL"
+      },
+      {
+        "time": 1750636800,
+        "type": "LONG"
+      },
+      {
+        "time": 1751716800,
+        "type": "LONG"
+      },
+      {
+        "time": 1754121600,
+        "type": "LONG"
+      },
+      {
+        "time": 1755993600,
+        "type": "SELL"
+      }
+    ],
+    "1d": [
+      {
+        "time": 1694563200,
+        "type": "LONG"
+      },
+      {
+        "time": 1717286400,
+        "type": "SELL"
+      },
+      {
+        "time": 1730592000,
+        "type": "LONG"
+      },
+      {
+        "time": 1750896000,
+        "type": "LONG"
+      }
+    ]
+  },
+  "SUI": {
+    "1m": [
+      {
+        "time": 1760016900,
+        "type": "SELL"
+      },
+      {
+        "time": 1760031240,
+        "type": "LONG"
+      },
+      {
+        "time": 1760051760,
+        "type": "LONG"
+      }
+    ],
+    "3m": [],
+    "5m": [],
+    "15m": [],
+    "30m": [],
+    "1h": [],
+    "2h": [],
+    "4h": [],
+    "1d": []
+  },
+  "GOLD": {
+    "1m": [],
+    "3m": [],
+    "5m": [],
+    "15m": [],
+    "30m": [],
+    "1h": [],
+    "2h": [],
+    "4h": [],
+    "1d": []
+  }
+}
+const symbolMap = {
+  "BTC":"BTCUSDT","ETH":"ETHUSDT","SOL":"SOLUSDT","BNB":"BNBUSDT",
+  "DOGE":"DOGEUSDT","TRON":"TRXUSDT"
+};
+
+const timeframes = ['1m','3m','5m','15m','30m','1h','2h','3h','4h','1d'];
+let activeSymbol = 'BTC', activeTF = '1m';
+
+const symbolMenu=document.getElementById('symbolMenu');
+const tfMenu=document.getElementById('tfMenu');
+const symbolToggle=document.getElementById('symbolToggle');
+const tfToggle=document.getElementById('tfToggle');
+
+Object.keys(symbolMap).forEach(s=>{
+  const div=document.createElement('div');
+  div.className='dropdown-item';
+  div.textContent=s;
+  div.onclick=()=>{activeSymbol=s; symbolToggle.textContent='ارز: '+s; refreshData(); closeMenus();};
+  symbolMenu.appendChild(div);
+});
+
+timeframes.forEach(tf=>{
+  const div=document.createElement('div');
+  div.className='dropdown-item';
+  div.textContent=tf;
+  div.onclick=()=>{activeTF=tf; tfToggle.textContent='تایم فریم: '+tf; refreshData(); closeMenus();};
+  tfMenu.appendChild(div);
+});
+
+function toggleMenu(menu){
+  closeMenus();
+  menu.classList.toggle('show');
+}
+function closeMenus(){
+  document.querySelectorAll('.dropdown-menu').forEach(m=>m.classList.remove('show'));
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.dropdown')) closeMenus();
+});
+symbolToggle.onclick=(e)=>{e.stopPropagation(); toggleMenu(symbolMenu);};
+tfToggle.onclick=(e)=>{e.stopPropagation(); toggleMenu(tfMenu);} ;
+
+const chartContainer=document.getElementById('chart');
+const tooltip=document.getElementById('tooltip');
+
+const chart = LightweightCharts.createChart(chartContainer, {
+  layout: {background:{color:'rgba(255,255,255,0.05)'}, textColor:'#fff'},
+  grid: { vertLines:{color:'#fff1'}, horzLines:{color:'#fff1'} },
+  crosshair: { 
+    mode: LightweightCharts.CrosshairMode.Normal,
+    vertLine: {
+      color: 'rgba(255,255,255,0.85)',  // سفید براق
+      width: 1.3,
+      style: 0,
+      visible: true,
+      labelBackgroundColor: 'rgba(255,255,255,0.2)'
+    },
+    horzLine: {
+      color: 'rgba(255,255,255,0.85)',
+      width: 1.3,
+      style: 0,
+      visible: true,
+      labelBackgroundColor: 'rgba(255,255,255,0.2)'
+    }
+  },
+  rightPriceScale: { borderColor:'#fff2' },
+  timeScale: { borderColor:'#fff2', timeVisible:true }
+});
+
+const candleSeries = chart.addCandlestickSeries({
+  upColor:'#22c55e', borderUpColor:'#22c55e', wickUpColor:'#22c55e',
+  downColor:'#ef4444', borderDownColor:'#ef4444', wickDownColor:'#ef4444'
+});
+
+function fmtTimeUnix(ts){
+  if(!ts) return '—';
+  return new Date(ts*1000).toLocaleString('fa-IR',{hour:'2-digit',minute:'2-digit',month:'2-digit',day:'2-digit'});
+}
+
+async function loadHistorical(symbolBinance, interval){
+  const url=`https://api.binance.com/api/v3/klines?symbol=${symbolBinance}&interval=${interval}&limit=1500`;
+  const res=await fetch(url);
+  const raw=await res.json();
+  const candles=raw.map(k=>({time:Math.floor(k[0]/1000),open:+k[1],high:+k[2],low:+k[3],close:+k[4]}));
+  candleSeries.setData(candles);
+
+  // 🌟 دایره‌های رنگی برای سیگنال‌ها
+  const signals = (signalData[activeSymbol] && signalData[activeSymbol][activeTF]) || [];
+  const markers = signals.map(sig => ({
+    time: sig.time,
+    position: sig.type === 'LONG' ? 'belowBar' : 'aboveBar',
+    color: sig.type === 'LONG' ? '#22c55e' : '#ef4444', // سبز و قرمز
+    shape: 'circle',
+    text: sig.type === 'LONG' ? 'LONG' : 'SELL'
+  }));
+  candleSeries.setMarkers(markers);
+}
+
+async function refreshData(){
+  await loadHistorical(symbolMap[activeSymbol], activeTF);
+}
+
+chart.subscribeCrosshairMove(param=>{
+  if(!param || !param.time || !param.point){ tooltip.style.display='none'; return; }
+  const t = typeof param.time==='number'?param.time:param.time.timestamp||param.time;
+  tooltip.innerHTML=`⏰ ${fmtTimeUnix(t)}`;
+  let x=param.point.x+16, y=param.point.y+16;
+  if(x>chartContainer.clientWidth-150) x=param.point.x-150;
+  tooltip.style.left=x+'px'; tooltip.style.top=y+'px';
+  tooltip.style.display='block';
+});
+chartContainer.addEventListener('mouseleave',()=>tooltip.style.display='none');
+
+(async function init(){ await refreshData(); })();
+</script>
+
+
+</body>
+</html>

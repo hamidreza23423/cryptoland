@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>خرید اندیکاتور</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn/Vazirmatn-font-face.css');
+
+body {
+  margin: 0;
+  font-family: 'Vazirmatn', sans-serif;
+  background: linear-gradient(135deg, #3b82f6, #9333ea);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  padding: 20px;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 95%;
+  max-width: 1200px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  overflow: hidden;
+  animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: scale(0.96);}
+  to {opacity: 1; transform: scale(1);}
+}
+
+.rules, .payment-box {
+  flex: 1 1 50%;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+/* بخش قوانین */
+.rules {
+  background: rgba(255,255,255,0.08);
+  border-left: 1px solid rgba(255,255,255,0.15);
+}
+
+.rules h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.rules p {
+  font-size: 15px;
+  line-height: 1.9;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 10px;
+}
+
+.rules ul {
+  list-style: none;
+  padding: 0;
+}
+
+.rules ul li {
+  margin-bottom: 8px;
+  position: relative;
+  padding-right: 20px;
+}
+
+.rules ul li::before {
+  content: "✔";
+  position: absolute;
+  right: 0;
+  color: #22c55e;
+}
+
+/* بخش پرداخت */
+.payment-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+}
+
+.payment-box h2 {
+  margin-bottom: 10px;
+}
+
+.select {
+  position: relative;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 10px 40px 10px 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.select:hover {
+  background: rgba(255,255,255,0.25);
+  transform: translateY(-1px);
+}
+
+/* آیکون فلش زیبا برای dropdown */
+.select::after {
+  content: "▾";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: rgba(255,255,255,0.8);
+  font-size: 16px;
+}
+
+/* گزینه‌های داخل منو */
+select option {
+  background: #0f172a;
+  color: #fff;
+  font-weight: 500;
+  padding: 10px;
+}
+
+/* وقتی فعال یا فوکوس شده */
+.select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(147,51,234,0.5);
+  background: rgba(255,255,255,0.25);
+}
+
+.wallet-box {
+  background: rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: monospace;
+  border: 1px solid rgba(255,255,255,0.25);
+  text-align: center;
+  user-select: all;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.wallet-box:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+.copy-message {
+  color: #22c55e;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  text-align: center;
+  margin-top: -10px;
+}
+
+.copy-message.show {
+  opacity: 1;
+}
+
+.qr-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.qr-box img {
+  width: 160px;
+  height: 160px;
+  border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.3);
+  background: #fff;
+  padding: 6px;
+  box-shadow: 0 0 15px rgba(255,255,255,0.2);
+}
+
+.button-back {
+  margin-top: 25px;
+  align-self: center;
+  background: linear-gradient(90deg, #8b5cf6, #ec4899);
+  border: none;
+  color: #fff;
+  font-size: 17px;
+  padding: 12px 28px;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(236,72,153,0.6);
+  transition: 0.25s;
+}
+
+.button-back:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(236,72,153,0.8);
+}
+
+/* واکنش‌گرایی */
+@media (max-width: 900px) {
+  .rules, .payment-box {
+    flex: 1 1 100%;
+    padding: 25px;
+    border: none;
+  }
+  .qr-box img {
+    width: 140px;
+    height: 140px;
+  }
+  .container {
+    border-radius: 16px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- بخش قوانین -->
+  <div class="rules">
+    <h2>شرایط استفاده و خرید اندیکاتور</h2>
+    <p>قبل از خرید، لطفاً شرایط زیر را مطالعه فرمایید:</p>
+    <ul>
+      <li>اندیکاتور فقط داخل تریدینگ ویو برای شما فعال خواهد شد.</li>
+      <li>بعد از پرداخت TXID یا اسکرین پرداختی خودتون به پشتیبانی ربات (@bitfork11) در تلگرام ارسال کنید .</li>
+      <li>روند فعال سازی اندیکاتور برای شما به این شکل هست که ایدی تردیگ ویو میدید و براتون فعال میشه تو حساب خودتون .</li>
+      <li>پرداخت فقط با رمزارزهای پشتیبانی‌شده انجام می‌گردد.</li>
+    </ul>
+  </div>
+
+  <!-- بخش پرداخت -->
+  <div class="payment-box">
+    <h2>💳 هزینه اندیکاتور ماهی : 50 تتر</h2>
+
+    <label>انتخاب ارز پرداخت:</label>
+    <select id="coinSelect" class="select">
+      <option value="USDT">USDT</option>
+    </select>
+
+    <label>انتخاب شبکه:</label>
+    <select id="networkSelect" class="select">
+      <option value="TRC20">BEP20</option>
+    </select>
+
+    <label>آدرس پرداخت:</label>
+    <div id="walletBox" class="wallet-box"></div>
+    <div id="copyMsg" class="copy-message">کپی شد ✅</div>
+
+    <div class="qr-box">
+      <img id="qrImage" src="" alt="QR Code">
+    </div>
+
+    <button class="button-back" onclick="window.location.href='make.html'">⬅ بازگشت</button>
+  </div>
+
+</div>
+
+<script>
+// آدرس‌ها
+const walletAddresses = {
+  USDT: {
+    TRC20: '0xde569012015a9912bd5c0c796eef40df3aa81c81'
+  }
+};
+
+const coinSelect = document.getElementById('coinSelect');
+const networkSelect = document.getElementById('networkSelect');
+const walletBox = document.getElementById('walletBox');
+const copyMsg = document.getElementById('copyMsg');
+const qrImage = document.getElementById('qrImage');
+
+function updateWallet() {
+  const coin = coinSelect.value;
+  const net = networkSelect.value;
+  const addr = walletAddresses[coin]?.[net] || '— در این شبکه پشتیبانی نمی‌شود —';
+  walletBox.textContent = addr;
+
+  // QR کد را از آدرس تولید کن (استفاده از API رایگان)
+  if (!addr.startsWith('—')) {
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${addr}`;
+    qrImage.src = qrUrl;
+  } else {
+    qrImage.src = '';
+  }
+}
+updateWallet();
+
+coinSelect.addEventListener('change', updateWallet);
+networkSelect.addEventListener('change', updateWallet);
+
+walletBox.addEventListener('click', () => {
+  const text = walletBox.textContent;
+  if (!text.startsWith('—')) {
+    navigator.clipboard.writeText(text);
+    copyMsg.classList.add('show');
+    setTimeout(()=>copyMsg.classList.remove('show'), 2000);
+  }
+});
+</script>
+
+</body>
+</html>
